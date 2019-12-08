@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 
 const Login = { template: '<div>Login Page</div>' }
+const NotFound = { template: '<div>Page not found</div>' }
 
 const routes = {
     '/': App,
@@ -12,7 +13,7 @@ new Vue({
     el: '#app',
     computed: {
         VueComponent() {
-            return routes[window.location.pathname] || { template: '<div>not found</div>' }
+            return routes[window.location.pathname] || NotFound
         }
     },
     render(h) {

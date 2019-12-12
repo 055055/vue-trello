@@ -15,8 +15,8 @@ export default {
     },
     watch:{
         '$route' :{
-            handler : 'fetchData',
-            immediate : true
+            handler : 'fetchData',     //시작하면 fetchData 실행
+            immediate : true           //즉시
         }
    },
     methods: {

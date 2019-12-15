@@ -10,17 +10,23 @@ import Card from '../components/Card.vue'
 
 Vue.use(VueRouter) //이거 때문에 $route로 라우터 접근 가능. 
 
+const requireAuth = (to, from, next) => {
+    const isAuth = localStorage.getItem('token')
+    const loginPath = `/login?rPath=${encodeURIComponent(to.path)}`
+    isAuth ? next() : next(loginPath)
+}
 
 const router = new VueRouter({
     mode: 'history', //url # 제거. history mode 사용
     routes: [
-        { path: '/', component: Home },
+        { path: '/', component: Home, beforeEnter: requireAuth },
         { path: '/login', component: Login },
         {
             path: '/b/:bid',
             component: Board,
+            beforeEnter: requireAuth,
             children: [
-                { path: 'c/:cid', component: Card }
+                { path: 'c/:cid', component: Card, beforeEnter: requireAuth }
             ]
         }, //: bid라는 변수로 받을 수 있다.
         { path: '*', component: NotFound } //마지막은 다 여기로. if else와 같이

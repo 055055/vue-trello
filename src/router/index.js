@@ -26,7 +26,7 @@ const router = new VueRouter({
             component: Board,
             beforeEnter: requireAuth,
             children: [
-                { path: 'c/:cid', component: Card, beforeEnter: requireAuth }
+                { path: 'c/:cid', component: Card }
             ]
         }, //: bid라는 변수로 받을 수 있다.
         { path: '*', component: NotFound } //마지막은 다 여기로. if else와 같이

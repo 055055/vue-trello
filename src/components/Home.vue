@@ -14,20 +14,24 @@
         </a>
       </div>
     </div>
-    <Modal></Modal>
+    <AddBoard v-if="isAddBoard" @close="isAddBoard=false" @submit="onAddBoard"/>
   </div>
 </template>
 
 <script>
 import {board} from '../api'
-import Modal from './Modal.vue'
+import AddBoard from './AddBoard.vue'
+
 export default {
-    components:{Modal},
-  data() {
+components: {
+    AddBoard
+},
+data() {
     return {
       loading: false,
       boards: [],
-      error: ''
+      error: '',
+      isAddBoard : false
     }
   },
   created() {
@@ -50,7 +54,11 @@ export default {
         })
     },
     addBoard() {
-      console.log('addBoard()')
+      this.isAddBoard = true
+    },
+    onAddBoard(title){
+        board.create(title)
+        .then(data => this.fetchData())
     }
   }
 }

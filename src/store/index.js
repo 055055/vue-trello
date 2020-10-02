@@ -6,16 +6,25 @@ Vue.use(Vuex)
     //보드추가 상태값 저장소
 const store = new Vuex.Store({
     state: {
-        isAddBoard: false
+        isAddBoard: false,
+        boards: []
     },
     mutations: {
         SET_IS_ADD_BOARD(state, toggle) {
             state.isAddBoard = toggle
+        },
+        SET_BOARDS(state, boards) {
+            state.boards = boards
         }
     },
     actions: {
         ADD_BOARD(_, { title }) {
             return api.board.create(title)
+        },
+        FETCH_BOARDS({ commit }) {
+            return api.board.fetch().then(data => {
+                commit('SET_BOARDS', data.list)
+            })
         }
     }
 })

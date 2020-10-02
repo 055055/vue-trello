@@ -15,7 +15,7 @@
       </div>
     </div>
     <!-- AddBoard Component에서 close 이벤트 받으면 false로 submit이벤트 받으면 onAddBoard 실행 -->
-    <AddBoard v-if="isAddBoard" @close="isAddBoard=false" @submit="onAddBoard"/>
+    <AddBoard v-if="isAddBoard" @close="isAddBoard=false"/>
   </div>
 </template>
 
@@ -31,15 +31,15 @@ components: {
 data() {
     return {
       loading: false,
-      boards: [],
       error: ''
     }
   },
   computed: {
     //es6 해체문법 vuex store
-    ...mapState([
-    'isAddBoard'
-    ])
+    ...mapState({
+    isAddBoard: 'isAddBoard',
+    boards: 'boards'
+    })
   },
   created() {
     this.fetchData()
@@ -55,24 +55,29 @@ data() {
     ...mapMutations([
       'SET_IS_ADD_BOARD'
     ]),
+     ...mapActions([
+      'FETCH_BOARDS'
+    ]),
     fetchData() {
       this.loading = true
-      board.fetch()
-        .then(data => {
-          this.boards = data.list
-        })
-        .finally(_=> {
-          this.loading = false
-        })
+      this.FETCH_BOARDS().finally(_=> {
+        this.loading = false
+      })
+
+     // board.fetch()
+      //   .then(data => {
+      //     this.boards = data.list
+      //   })
+      //   .finally(_=> {
+      //     this.loading = false
+      //   })
     },
     // addBoard() {
     //   //vuex mutation
     //   this.$store.commit('SET_IS_ADD_BOARD',true)
 
     // },
-    onAddBoard(){
-      this.fetchData() // 성공하면 다시 재조회
-    }
+  
   }
 }
 </script>

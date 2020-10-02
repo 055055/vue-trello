@@ -70,9 +70,8 @@ data() {
     //   this.$store.commit('SET_IS_ADD_BOARD',true)
 
     // },
-    onAddBoard(title){
-        board.create(title)
-        .then(data => this.fetchData()) // 성공하면 다시 재조회
+    onAddBoard(){
+      this.fetchData() // 성공하면 다시 재조회
     }
   }
 }

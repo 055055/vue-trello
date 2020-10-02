@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { compileToFunctions } from 'vue-template-compiler';
+import * as api from '../api'
 
 Vue.use(Vuex)
     //보드추가 상태값 저장소
@@ -11,6 +11,11 @@ const store = new Vuex.Store({
     mutations: {
         SET_IS_ADD_BOARD(state, toggle) {
             state.isAddBoard = toggle
+        }
+    },
+    actions: {
+        ADD_BOARD(_, { title }) {
+            return api.board.create(title)
         }
     }
 })

@@ -24,7 +24,7 @@
 
 <script>
 import Modal from './Modal.vue'
-import {mapMutations} from 'vuex'
+import {mapMutations, mapActions} from 'vuex'
 
 export default {
   components: {
@@ -50,10 +50,15 @@ export default {
     ...mapMutations([
       'SET_IS_ADD_BOARD'
     ]),
+    ...mapActions([
+      'ADD_BOARD'
+    ]),
     addBoard() {
      this.SET_IS_ADD_BOARD(false)
      //상위 컴포넌트 (HOME)으로 인풋값 전달
-      this.$emit('submit', this.input)
+     this.$emit('submit')
+     //vuex action call
+     this.ADD_BOARD({title : this.input}) 
     }
   }
 }

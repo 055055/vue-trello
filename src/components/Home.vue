@@ -9,11 +9,12 @@
         </router-link>
       </div>
       <div class="board-item board-item-new">
-        <a class="new-board-btn" href="" @click.prevent="addBoard">
+        <a class="new-board-btn" href="" @click.prevent="SET_IS_ADD_BOARD(true)">
           Create new board...
         </a>
       </div>
     </div>
+    <!-- AddBoard Component에서 close 이벤트 받으면 false로 submit이벤트 받으면 onAddBoard 실행 -->
     <AddBoard v-if="isAddBoard" @close="isAddBoard=false" @submit="onAddBoard"/>
   </div>
 </template>
@@ -21,7 +22,7 @@
 <script>
 import {board} from '../api'
 import AddBoard from './AddBoard.vue'
-import {mapState} from 'vuex'
+import {mapState, mapActions, mapMutations} from 'vuex'
 
 export default {
 components: {
@@ -35,6 +36,7 @@ data() {
     }
   },
   computed: {
+    //es6 해체문법 vuex store
     ...mapState([
     'isAddBoard'
     ])
@@ -43,11 +45,16 @@ data() {
     this.fetchData()
   },
   updated() {
+    // 컴포넌트에서 boardItem을 참조함. board의 background color 변경
     this.$refs.boardItem.forEach(el => {
       el.style.backgroundColor = el.dataset.bgcolor
     })
   },
   methods: {
+    //addBoard
+    ...mapMutations([
+      'SET_IS_ADD_BOARD'
+    ]),
     fetchData() {
       this.loading = true
       board.fetch()
@@ -58,13 +65,14 @@ data() {
           this.loading = false
         })
     },
-    addBoard() {
-      //this.isAddBoard = true
-      
-    },
+    // addBoard() {
+    //   //vuex mutation
+    //   this.$store.commit('SET_IS_ADD_BOARD',true)
+
+    // },
     onAddBoard(title){
         board.create(title)
-        .then(data => this.fetchData())
+        .then(data => this.fetchData()) // 성공하면 다시 재조회
     }
   }
 }

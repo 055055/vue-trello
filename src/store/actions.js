@@ -22,10 +22,16 @@ const actions = {
         return api.card.create({ title, listId, pos })
             .then(() => dispatch('FETCH_BOARD', { id: state.board.id }))
     },
+    //commit은 ctx안에 있음
     FETCH_CARD({ commit }, { id }) {
         return api.card.fetch(id).then(data => {
             commit('SET_CARD', data.item)
         })
+    },
+    //dispatch도 ctx(context)안에 있음 context란 하나의 트랜잭션인듯 jpa와 같이 내생각임 
+    UPDATE_CARD({ dispatch, state }, { id, title, description, pos, listId }) {
+        return api.card.update(id, { title, description, pos, listId })
+            .then(_ => dispatch('FETCH_BOARD', { id: state.board.id }))
     }
 }
 

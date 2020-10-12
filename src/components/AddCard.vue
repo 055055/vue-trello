@@ -48,7 +48,8 @@ export default {
      },
      newCardPos(){
         const curList = this.$store.state.board.lists.filter(l => l.id === this.listId)[0]
-        if (!curList) return 65535
+       //기본위치 반환
+       if (!curList) return 65535
         const {cards} = curList
         if (!cards.length) return 65535
         return cards[cards.length -1].pos *2 

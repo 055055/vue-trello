@@ -28,7 +28,11 @@ const mutations = {
         //color가 있으면 color 없으면 흰색
         state.bodyColor = color ? color : 'rgb(255,255,255)'
         state.navbarColor = color ? 'rgba(0,0,0,.15)' : '#026aa7'
+    },
+    SET_IS_SHOW_BOARD_SETTINGS(state, toggle) {
+        state.isShowBoardSettings = toggle
     }
+
 }
 
 export default mutations

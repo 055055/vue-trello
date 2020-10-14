@@ -43,6 +43,7 @@ data() {
   },
   created() {
     this.fetchData()
+    this.SET_THEME()
   },
   updated() {
     // 컴포넌트에서 boardItem을 참조함. board의 background color 변경
@@ -53,7 +54,8 @@ data() {
   methods: {
     //addBoard
     ...mapMutations([
-      'SET_IS_ADD_BOARD'
+      'SET_IS_ADD_BOARD',
+      'SET_THEME'
     ]),
      ...mapActions([
       'FETCH_BOARDS'

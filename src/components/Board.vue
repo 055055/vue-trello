@@ -18,7 +18,7 @@
   </div>
 </template>
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions, mapMutations } from "vuex";
 import List from "./List.vue";
 import dragger from "../utils/dragger";
 
@@ -35,23 +35,27 @@ export default {
   },
   computed: {
     ...mapState({
-      board: "board"
+      board: 'board'
     })
   },
-  created() {
-    this.fetchData();
+   created() {
+    this.fetchData().then(() => {
+      this.SET_THEME(this.board.bgColor)
+    })
   },
   //자식 컴포넌트가 다 랜더링해야 되기 때문에 updated 시 dragula
   updated() {
-    this.setCardDragabble();
+    this.setCardDragabble()
   },
   methods: {
+    ...mapMutations([
+      'SET_THEME'
+    ]),
     ...mapActions(["FETCH_BOARD", "UPDATE_CARD"]),
-    fetchData() {
-      this.loading = true;
-      this.FETCH_BOARD({ id: this.$route.params.bid }).then(
-        () => (this.loading = false)
-      );
+  fetchData() {
+      this.loading = true
+      return this.FETCH_BOARD({id: this.$route.params.bid})
+        .then(() => this.loading = false)
     },
     setCardDragabble() {
       if (this.cDragger) this.cDragger.destroy();

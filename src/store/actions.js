@@ -17,6 +17,10 @@ const actions = {
     DELETE_BOARD(_, { id }) {
         return api.board.destory(id)
     },
+    UPDATE_BOARD({ dispatch, state }, { id, title, bgColor }) {
+        return api.board.update(id, { title, bgColor })
+            .then(() => dispatch('FETCH_BOARD', { id: state.board.id }))
+    },
     LOGIN({ commit }, { email, password }) {
         return api.auth.login(email, password)
             .then(({ accessToken }) => commit('LOGIN', accessToken))

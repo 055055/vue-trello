@@ -3,10 +3,17 @@
     <div class="board-wrapper">
       <div class="board">
         <div class="board-header">
-          <span class="board-title">{{board.title}}</span>
-          <a class="board-header-btn show-menu" href="" @click.prevent="onShowSettings">
-            ... Show Menu
-          </a>
+          <input
+            class="form-control"
+            v-if="isEditTitle"
+            type="text"
+            v-model="inputTitle"
+            ref="inputTitle"
+            @blur="onSubmitTitle"
+            @keyup.enter="onSubmitTitle"
+          />
+          <span v-else class="board-title" @click="onClickTitle">{{board.title}}</span>
+          <a class="board-header-btn show-menu" href @click.prevent="onShowSettings">... Show Menu</a>
         </div>
         <div class="list-section-wrapper">
           <div class="list-section">
@@ -17,14 +24,14 @@
         </div>
       </div>
     </div>
-    <BoardSettings v-if="isShowBoardSettings"/>
+    <BoardSettings v-if="isShowBoardSettings" />
     <router-view></router-view>
   </div>
 </template>
 <script>
 import { mapState, mapActions, mapMutations } from "vuex";
 import List from "./List.vue";
-import BoardSettings from './BoardSettings.vue'
+import BoardSettings from "./BoardSettings.vue";
 import dragger from "../utils/dragger";
 
 export default {
@@ -36,37 +43,36 @@ export default {
     return {
       bid: 0,
       loading: false,
-      cDragger: null
+      cDragger: null,
+      isEditTitle: false,
+      inputTitle: ""
     };
   },
   computed: {
     ...mapState({
-      board: 'board',
-      isShowBoardSettings: 'isShowBoardSettings'
+      board: "board",
+      isShowBoardSettings: "isShowBoardSettings"
     })
-
   },
-   created() {
+  created() {
     this.fetchData().then(() => {
-      this.SET_THEME(this.board.bgColor)
-    })
-    this.SET_IS_SHOW_BOARD_SETTINGS(false)
-
+      this.inputTitle = this.board.title;
+      this.SET_THEME(this.board.bgColor);
+    });
+    this.SET_IS_SHOW_BOARD_SETTINGS(false);
   },
   //자식 컴포넌트가 다 랜더링해야 되기 때문에 updated 시 dragula
   updated() {
-    this.setCardDragabble()
+    this.setCardDragabble();
   },
   methods: {
-    ...mapMutations([
-      'SET_THEME',
-      'SET_IS_SHOW_BOARD_SETTINGS'
-    ]),
-    ...mapActions(["FETCH_BOARD", "UPDATE_CARD"]),
-  fetchData() {
-      this.loading = true
-      return this.FETCH_BOARD({id: this.$route.params.bid})
-        .then(() => this.loading = false)
+    ...mapMutations(["SET_THEME", "SET_IS_SHOW_BOARD_SETTINGS"]),
+    ...mapActions(["FETCH_BOARD", "UPDATE_CARD", "UPDATE_BOARD"]),
+    fetchData() {
+      this.loading = true;
+      return this.FETCH_BOARD({ id: this.$route.params.bid }).then(
+        () => (this.loading = false)
+      );
     },
     setCardDragabble() {
       if (this.cDragger) this.cDragger.destroy();
@@ -99,7 +105,24 @@ export default {
       });
     },
     onShowSettings() {
-      this.SET_IS_SHOW_BOARD_SETTINGS(true)
+      this.SET_IS_SHOW_BOARD_SETTINGS(true);
+    },
+    onClickTitle() {
+      this.isEditTitle = true;
+      //타이머로 실행 지연 후 커서 이동
+      this.$nextTick(() => this.$refs.inputTitle.focus());
+    },
+    onSubmitTitle() {
+      this.isEditTitle = false;
+      this.inputTitle = this.inputTitle.trim();
+
+      if (!this.inputTitle) return;
+
+      const id = this.board.id;
+      const title = this.inputTitle;
+      if (title === this.board.title) return;
+
+      this.UPDATE_BOARD({ id, title });
     }
   }
 };

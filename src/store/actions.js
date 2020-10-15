@@ -25,6 +25,13 @@ const actions = {
         return api.auth.login(email, password)
             .then(({ accessToken }) => commit('LOGIN', accessToken))
     },
+
+    ADD_LIST({ dispatch, state }, { title, boardId, pos }) {
+        return api.list.create({ title, boardId, pos })
+            .then(() => dispatch('FETCH_BOARD', { id: state.board.id }))
+    },
+
+
     ADD_CARD({ dispatch, state }, { title, listId, pos }) {
         return api.card.create({ title, listId, pos })
             .then(() => dispatch('FETCH_BOARD', { id: state.board.id }))

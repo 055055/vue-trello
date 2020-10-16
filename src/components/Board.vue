@@ -17,12 +17,17 @@
         </div>
         <div class="list-section-wrapper">
           <div class="list-section">
-            <div class="list-wrapper" v-for="list in board.lists" :key="list.pos">
+            <div
+              class="list-wrapper"
+              v-for="list in board.lists"
+              :key="list.pos"
+              :data-list-id="list.id"
+            >
               <List :data="list"></List>
             </div>
-              <div class="list-wrapper">
-                <AddList/>
-              </div>
+            <div class="list-wrapper">
+              <AddList />
+            </div>
           </div>
         </div>
       </div>
@@ -34,7 +39,7 @@
 <script>
 import { mapState, mapActions, mapMutations } from "vuex";
 import List from "./List.vue";
-import AddList from './AddList.vue'
+import AddList from "./AddList.vue";
 import BoardSettings from "./BoardSettings.vue";
 import dragger from "../utils/dragger";
 
@@ -49,6 +54,8 @@ export default {
       bid: 0,
       loading: false,
       cDragger: null,
+      lDragger: null,
+
       isEditTitle: false,
       inputTitle: ""
     };
@@ -69,10 +76,16 @@ export default {
   //자식 컴포넌트가 다 랜더링해야 되기 때문에 updated 시 dragula
   updated() {
     this.setCardDragabble();
+    this.setListDragablle();
   },
   methods: {
     ...mapMutations(["SET_THEME", "SET_IS_SHOW_BOARD_SETTINGS"]),
-    ...mapActions(["FETCH_BOARD", "UPDATE_CARD", "UPDATE_BOARD"]),
+    ...mapActions([
+      "FETCH_BOARD",
+      "UPDATE_CARD",
+      "UPDATE_BOARD",
+      "UPDATE_LIST"
+    ]),
     fetchData() {
       this.loading = true;
       return this.FETCH_BOARD({ id: this.$route.params.bid }).then(
@@ -107,6 +120,41 @@ export default {
         console.log(targetCard);
 
         this.UPDATE_CARD(targetCard);
+      });
+    },
+    setListDragablle() {
+      if (this.lDragger) this.lDragger.destroy();
+      const options = {
+        invalid: (el, handle) => !/^list/.test(handle.className)
+      }
+
+      this.lDragger = dragger.init(
+        Array.from(this.$el.querySelectorAll(".list-section")),
+        options
+      );
+      this.lDragger.on("drop", (el, wrapper, target, sibilings) => {
+        // debugger
+        // 어디로 이동해야할지 정보를 담고 있는 객체
+        const targetList = {
+          //문자열이니 숫자로 변환
+          id: el.dataset.listId * 1,
+          pos: 65535
+        };
+
+        const { prev, next } = dragger.sibling({
+          el,
+          wrapper,
+          candidates: Array.from(wrapper.querySelectorAll(".list")),
+          type: "list"
+        });
+
+        //맨앞에 있다면
+        if (!prev && next) targetList.pos = next.pos / 2;
+        else if (!next && prev) targetList.pos = prev.pos * 2;
+        else if (prev && next) targetList.pos = (prev.pos + next.pos) / 2;
+        console.log(targetList);
+
+        this.UPDATE_LIST(targetList);
       });
     },
     onShowSettings() {
